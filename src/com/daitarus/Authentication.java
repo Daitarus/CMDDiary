@@ -1,33 +1,33 @@
 package com.daitarus;
 
 import java.util.Scanner;
-import java.io.File;
+import java.io.*;
 
 public class Authentication extends LayoutMenu{
+
+    private final String[] systemAMess = new String[] {
+            "Что бы вернуться назад введите \"exit\" (логин и пароль не может быть \"exit\")",
+            "Введите ваш логин: ",
+            "Введите ваш пароль: ",
+            "Успешная регистрация!",
+            "Ошибка регистрации!",
+            "Пользователь с таким логином уже существует!"
+    };
+
     public Authentication()
     {
-       writeSM();
-       menu();
-       switch(answer){
-           case 1:
-           {
-               authorization();
-               break;
-           }
-           case 2:
-           {
-               registration();
-               menu();
-               break;
-           }
-           case 3:
-           {
-               exit();
-               break;
-           }
-           default:
-               break;
-       }
+        int answer = 0;
+        writeSM();
+        while(answer!=3)
+        {
+            answer=menu();
+            if(answer==1){
+                authorization();
+            }
+            if(answer==2){
+                registration();
+            }
+        }
     }
 
     @Override
@@ -40,30 +40,71 @@ public class Authentication extends LayoutMenu{
         };
     }
 
-    private void authorization()
+    private int authorization()
     {
-        //System.out.println("авторизация");
+        Scanner in = new Scanner(System.in);
+        File dir = new File("Data//Profiles");
+        File profile;
+        System.out.println(systemAMess[0]);
+        System.out.print(systemAMess[1]);
+        String login = in.nextLine();
+        if (login.equals("exit")) {
+            return 0;
+        }
+        System.out.print(systemAMess[2]);
+        String password = in.nextLine();
+        if (password.equals("exit")) {
+            return 0;
+        }
+        profile = new File(dir, login);
+        if (!profile.exists()) {
+            return 1;
+        }
+        return 0;
     }
 
-    private void registration()
+    private boolean registration()
     {
-        in = new Scanner(System.in);
-        System.out.print("Что бы вернуться назад введите \"exit\" (логин и пароль не может быть \"exit\")");
-        System.out.print("Введите ваш логин: ");
-        String login = in.nextLine();
-        System.out.println();
-        if (login=="exit")
-        {
-            return;
+        Scanner in = new Scanner(System.in);
+        File dir = new File("Data//Profiles");
+        File profile;
+        System.out.println(systemAMess[0]);
+        String login = "0";
+        boolean o = true;
+        while(o){
+            o = false;
+            System.out.print(systemAMess[1]);
+            login = in.nextLine();
+            if (login.equals("exit"))
+            {
+                return false;
+            }
+            profile = new File(dir, login);
+            if(profile.exists()) {
+                o = true;
+                System.out.println(systemAMess[5]);
+            }
         }
-        System.out.print("Введите ваш пароль: ");
+        profile = new File(dir, login);
+        System.out.print(systemAMess[2]);
         String password = in.nextLine();
-        System.out.println();
-        if (password=="exit")
+        if (password.equals("exit"))
         {
-            return;
+            return false;
         }
-        //file
-        System.out.println("Пользователь " + login + " создан!");
+        try {
+            boolean cr = profile.createNewFile();
+            if(cr) {
+                FileWriter writer = new FileWriter(profile, false);
+                writer.write("Password: " + password);
+                writer.flush();
+            }
+            System.out.println(systemAMess[3]);
+            return true;
+        }catch (IOException ex){
+            System.out.println(systemAMess[4]);
+            return false;
+        }
+
     }
 }
