@@ -1,5 +1,6 @@
 package com.daitarus;
 
+import java.util.Arrays;
 import java.util.Scanner;
 import java.io.*;
 
@@ -11,25 +12,57 @@ public class Authentication extends LayoutMenu{
             "Введите ваш пароль: ",
             "Успешная регистрация!",
             "Ошибка регистрации!",
-            "Пользователь с таким логином уже существует!"
+            "Пользователь с таким логином уже существует!",
+            "Неверный логин или пароль!",
+            "Вы успешно вошли"
     };
+    private String login;
+    private String password;
 
     public Authentication()
     {
-        int answer = 0;
         writeSM();
-        while(answer!=3)
+    }
+
+    public String getLogin() {
+        return this.login;
+    }
+    public String getPassword(){
+
+        return this.password;
+    }
+    public void authentificationAll()
+    {
+        int answer = 0; int auth;
+        while(answer!=4)
         {
-            answer=menu();
+            if(answer==0) {
+                answer = menu();
+            }
             if(answer==1){
-                authorization();
+                auth = authorization();
+                if(auth==2){
+                    System.out.println(systemAMess[7]);
+                    answer=4;
+                }
+                else{
+                    if(auth==0){
+                        answer=0;
+                    }
+                    else{
+                        System.out.println(systemAMess[6]);
+                    }
+                }
             }
             if(answer==2){
                 registration();
+                answer=0;
+            }
+            if(answer==3){
+                exit();
             }
         }
     }
-
     @Override
     protected void writeSM(){
         systemMess = new String[]{
@@ -43,8 +76,7 @@ public class Authentication extends LayoutMenu{
     private int authorization()
     {
         Scanner in = new Scanner(System.in);
-        File dir = new File("Data//Profiles");
-        File profile;
+        FileWork profile;
         System.out.println(systemAMess[0]);
         System.out.print(systemAMess[1]);
         String login = in.nextLine();
@@ -56,20 +88,27 @@ public class Authentication extends LayoutMenu{
         if (password.equals("exit")) {
             return 0;
         }
-        profile = new File(dir, login);
+        profile = new FileWork("Data//Profiles//"+login);
         if (!profile.exists()) {
             return 1;
+        }else{
+            if(password.equals(profile.readLine(0))){
+                this.login=login;
+                this.password=password;
+                return 2;
+            }
+            else{
+                return 1;
+            }
         }
-        return 0;
     }
 
     private boolean registration()
     {
         Scanner in = new Scanner(System.in);
-        File dir = new File("Data//Profiles");
-        File profile;
+        FileWork profile;
         System.out.println(systemAMess[0]);
-        String login = "0";
+        String login = null;
         boolean o = true;
         while(o){
             o = false;
@@ -79,32 +118,32 @@ public class Authentication extends LayoutMenu{
             {
                 return false;
             }
-            profile = new File(dir, login);
+            profile = new FileWork("Data//Profiles//"+login);
             if(profile.exists()) {
                 o = true;
                 System.out.println(systemAMess[5]);
             }
         }
-        profile = new File(dir, login);
+        profile = new FileWork("Data//Profiles//"+login);
         System.out.print(systemAMess[2]);
         String password = in.nextLine();
         if (password.equals("exit"))
         {
             return false;
         }
-        try {
-            boolean cr = profile.createNewFile();
-            if(cr) {
-                FileWriter writer = new FileWriter(profile, false);
-                writer.write("Password: " + password);
-                writer.flush();
+        if(profile.createFile()){
+            if(profile.write(password)){
+                System.out.println(systemAMess[3]);
+                return true;
             }
-            System.out.println(systemAMess[3]);
-            return true;
-        }catch (IOException ex){
+            else{
+                System.out.println(systemAMess[4]);
+                return false;
+            }
+        }
+        else{
             System.out.println(systemAMess[4]);
             return false;
         }
-
     }
 }
