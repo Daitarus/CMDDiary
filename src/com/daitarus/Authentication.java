@@ -88,7 +88,7 @@ public class Authentication extends LayoutMenu{
         if (password.equals("exit")) {
             return 0;
         }
-        profile = new FileWork("Data//Profiles//"+login);
+        profile = new FileWork("Data//Profiles//"+login+"//profile");
         if (!profile.exists()) {
             return 1;
         }else{
@@ -106,31 +106,35 @@ public class Authentication extends LayoutMenu{
     private boolean registration()
     {
         Scanner in = new Scanner(System.in);
+        File dirProfile;
         FileWork profile;
         System.out.println(systemAMess[0]);
         String login = null;
         boolean o = true;
-        while(o){
+        while(o) {
             o = false;
             System.out.print(systemAMess[1]);
             login = in.nextLine();
-            if (login.equals("exit"))
-            {
+            if (login.equals("exit")) {
                 return false;
             }
-            profile = new FileWork("Data//Profiles//"+login);
-            if(profile.exists()) {
+            dirProfile = new File("Data//Profiles//" + login);
+            if (dirProfile.exists()) {
                 o = true;
                 System.out.println(systemAMess[5]);
             }
         }
-        profile = new FileWork("Data//Profiles//"+login);
         System.out.print(systemAMess[2]);
         String password = in.nextLine();
         if (password.equals("exit"))
         {
             return false;
         }
+        dirProfile = new File("Data//Profiles//"+login);
+        if(!dirProfile.mkdirs()){
+            return false;
+        }
+        profile = new FileWork("Data//Profiles//"+login+"//profile");
         if(profile.createFile()){
             if(profile.write(password)){
                 System.out.println(systemAMess[3]);
@@ -142,7 +146,7 @@ public class Authentication extends LayoutMenu{
             }
         }
         else{
-            System.out.println(systemAMess[4]);
+            System.out.println(systemAMess[4]+"..");
             return false;
         }
     }

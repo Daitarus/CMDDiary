@@ -6,7 +6,9 @@ public class Main {
     public static void main(String[] args) {
         Authentication authentication = new Authentication();
         authentication.authentificationAll();
-        System.out.println(authentication.getLogin());
-        System.out.println(authentication.getPassword());
+        Diary diary = new Diary();
+        diary.diaryAll();
+        //change diary
+
     }
 }
