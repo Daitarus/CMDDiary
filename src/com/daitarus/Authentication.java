@@ -146,7 +146,7 @@ public class Authentication extends LayoutMenu{
             }
         }
         else{
-            System.out.println(systemAMess[4]+"..");
+            System.out.println(systemAMess[4]);
             return false;
         }
     }
